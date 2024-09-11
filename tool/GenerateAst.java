@@ -18,10 +18,6 @@ public class GenerateAst {
                 "Literal  : Object value",
                 "Unary    : Token operator, Expr right"
         ));
-        defineAst(outputDir, "Stmt", Arrays.asList(
-                "Expression : Expr expression",
-                "Print      : Expr expression"
-        ));
     }
 
     private static void defineAst(
@@ -53,6 +49,19 @@ public class GenerateAst {
         writer.close();
     }
 
+    private static void defineVisitor(
+            PrintWriter writer, String baseName, List<String> types) {
+        writer.println("  interface Visitor<R> {");
+
+        for (String type : types) {
+            String typeName = type.split(":")[0].trim();
+            writer.println("    R visit" + typeName + baseName + "(" +
+                    typeName + " " + baseName.toLowerCase() + ");");
+        }
+
+        writer.println("  }");
+    }
+
     private static void defineType(
             PrintWriter writer, String baseName,
             String className, String fieldList) {
@@ -71,11 +80,6 @@ public class GenerateAst {
 
         writer.println("    }");
 
-        // Fields.
-        writer.println();
-        for (String field : fields) {
-            writer.println("    final " + field + ";");
-        }
 
         // Visitor pattern.
         writer.println();
@@ -85,22 +89,14 @@ public class GenerateAst {
                 className + baseName + "(this);");
         writer.println("    }");
 
-        writer.println("  }");
-    }
-
-    private static void defineVisitor(
-            PrintWriter writer, String baseName, List<String> types) {
-        writer.println("  interface Visitor<R> {");
-
-        for (String type : types) {
-            String typeName = type.split(":")[0].trim();
-            writer.println("    R visit" + typeName + baseName + "(" +
-                    typeName + " " + baseName.toLowerCase() + ");");
+        // Fields.
+        writer.println();
+        for (String field : fields) {
+            writer.println("    final " + field + ";");
         }
 
         writer.println("  }");
-
-
     }
+
 
 }
